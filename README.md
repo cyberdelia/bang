@@ -16,16 +16,21 @@ To run 10 workers during 10 seconds :
     $ bang -url http://localhost:5000 -concurrency=10 -duration=10s
 	Running 10 workers for at least 10s
 	Starting to load the server
-	Successful calls  		     68167
+	Successful calls  		     67040
 	Total time        		        10.00s
 	Fastest           		         0.00s
 	Slowest           		         0.01s
-	Average           		         0.00s
+	Mean              		         0.00s
 	Standard deviation		         0.00s
-	Mean rate         		      6815.36
-	1-min rate        		      6813.85
-	5-min rate        		      6813.49
-	15-min rate       		      6813.63
+	Median            		         0.00s
+	75th percentile   		         0.00s
+	95th percentile   		         0.00s
+	99th percentile   		         0.00s
+	99.9th percentile 		         0.00s
+	Mean rate         		      6702.37
+	1-min rate        		      6757.18
+	5-min rate        		      6765.09
+	15-min rate       		      6766.49
 
 ## About
 

@@ -41,12 +41,18 @@ func worker(request *http.Request, timer *metrics.StandardTimer) {
 }
 
 func summary(duration time.Duration, timer *metrics.StandardTimer) {
+	percentiles := timer.Percentiles([]float64{0.5, 0.75, 0.95, 0.99, 0.999})
 	fmt.Printf("Successful calls  \t\t %9d\n", timer.Count())
 	fmt.Printf("Total time        \t\t %12.2fs\n", duration.Seconds())
 	fmt.Printf("Fastest           \t\t %12.2fs\n", time.Duration(timer.Min()).Seconds())
 	fmt.Printf("Slowest           \t\t %12.2fs\n", time.Duration(timer.Max()).Seconds())
-	fmt.Printf("Average           \t\t %12.2fs\n", time.Duration(timer.Mean()).Seconds())
+	fmt.Printf("Mean              \t\t %12.2fs\n", time.Duration(timer.Mean()).Seconds())
 	fmt.Printf("Standard deviation\t\t %12.2fs\n", time.Duration(timer.StdDev()).Seconds())
+	fmt.Printf("Median            \t\t %12.2fs\n", time.Duration(percentiles[0]).Seconds())
+	fmt.Printf("75th percentile   \t\t %12.2fs\n", time.Duration(percentiles[1]).Seconds())
+	fmt.Printf("95th percentile   \t\t %12.2fs\n", time.Duration(percentiles[2]).Seconds())
+	fmt.Printf("99th percentile   \t\t %12.2fs\n", time.Duration(percentiles[3]).Seconds())
+	fmt.Printf("99.9th percentile \t\t %12.2fs\n", time.Duration(percentiles[4]).Seconds())
 	fmt.Printf("Mean rate         \t\t %12.2f\n", timer.RateMean())
 	fmt.Printf("1-min rate        \t\t %12.2f\n", timer.Rate1())
 	fmt.Printf("5-min rate        \t\t %12.2f\n", timer.Rate5())

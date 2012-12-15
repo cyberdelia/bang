@@ -20,7 +20,7 @@ var (
 
 func init() {
 	flag.StringVar(&url, "url", "http://localhost:80", "URL to hit")
-	flag.IntVar(&concurrency, "concurrency", 100, "Concurrency")
+	flag.IntVar(&concurrency, "concurrency", 10, "Concurrency")
 	flag.StringVar(&duration, "duration", "10s", "Duration")
 	flag.StringVar(&method, "method", "GET", "HTTP method")
 	flag.StringVar(&contentType, "content-type", "text/plain", "Content-Type")

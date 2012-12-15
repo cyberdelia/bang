@@ -7,7 +7,8 @@ Bang is a tool to send load to your web app.
 Download and install :
 
     $ git clone git://github.com/cyberdelia/bang.git
-    $ git install
+    $ go get
+    $ go install
 
 ## Usage
 

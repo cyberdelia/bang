@@ -32,6 +32,20 @@ To run 10 workers during 10 seconds :
 	5-min rate        		      6765.09
 	15-min rate       		      6766.49
 
+## Options
+
+Bang tries to be helpful and has plenty of options : 
+
+	$ bang -h
+	Usage of bang:
+	  -body="": Request body
+	  -concurrency=10: Concurrency
+	  -content-type="text/plain": Content-Type
+	  -duration="10s": Duration
+	  -method="GET": HTTP method
+	  -url="": URL to hit
+
+
 ## About
 
 Bang is born out of the curiosity to build something like

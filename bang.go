@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/rcrowley/go-metrics"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 )
@@ -19,7 +20,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&url, "url", "http://localhost:80", "URL to hit")
+	flag.StringVar(&url, "url", "", "URL to hit")
 	flag.IntVar(&concurrency, "concurrency", 10, "Concurrency")
 	flag.StringVar(&duration, "duration", "10s", "Duration")
 	flag.StringVar(&method, "method", "GET", "HTTP method")
@@ -54,6 +55,11 @@ func summary(duration time.Duration, timer *metrics.StandardTimer) {
 
 func main() {
 	flag.Parse()
+
+	if url == "" {
+		fmt.Fprintf(os.Stderr, "please specify an url to run bang\n")
+		return
+	}
 
 	timer := metrics.NewTimer()
 

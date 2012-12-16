@@ -74,9 +74,6 @@ func main() {
 		panic(err)
 	}
 
-	timeout := time.NewTimer(d)
-	defer timeout.Stop()
-
 	fmt.Printf("Running %d workers for at least %s\n", concurrency, duration)
 	fmt.Println("Starting to load the server")
 
@@ -93,7 +90,7 @@ func main() {
 	}()
 
 	select {
-	case <-timeout.C:
+	case <-time.After(d):
 		summary(d, timer)
 	}
 }

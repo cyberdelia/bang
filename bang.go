@@ -29,6 +29,12 @@ func init() {
 }
 
 func worker(request *http.Request, timer *metrics.StandardTimer) {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", e)
+			os.Exit(1)
+		}
+	}()
 	for {
 		timer.Time(func() {
 			response, err := http.DefaultClient.Do(request)
@@ -64,14 +70,15 @@ func main() {
 
 	if url == "" {
 		fmt.Fprintf(os.Stderr, "please specify an url to run bang\n")
-		return
+		os.Exit(1)
 	}
 
 	timer := metrics.NewTimer()
 
 	d, err := time.ParseDuration(duration)
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "can't parse duration: %s\n", err)
+		os.Exit(1)
 	}
 
 	fmt.Printf("Running %d workers for at least %s\n", concurrency, duration)
@@ -80,7 +87,8 @@ func main() {
 	go func() {
 		request, err := http.NewRequest(method, url, strings.NewReader(body))
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(os.Stderr, "can't build request: %s\n", err)
+			os.Exit(1)
 		}
 		request.ContentLength = -1
 		request.Header.Add("Content-Type", contentType)

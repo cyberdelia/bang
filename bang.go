@@ -34,7 +34,7 @@ func init() {
 }
 
 type worker struct {
-	timer	    *metrics.StandardTimer
+	timer       *metrics.StandardTimer
 	done        chan *metrics.StandardTimer
 	request     *http.Request
 	concurrency int
@@ -42,10 +42,10 @@ type worker struct {
 
 func newWorker(request *http.Request, concurrency int) *worker {
 	return &worker{
-		request: request,
+		request:     request,
 		concurrency: concurrency,
-		timer: metrics.NewTimer(),
-		done: make(chan *metrics.StandardTimer),
+		timer:       metrics.NewTimer(),
+		done:        make(chan *metrics.StandardTimer),
 	}
 }
 

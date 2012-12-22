@@ -46,6 +46,21 @@ func worker(request *http.Request, timer *metrics.StandardTimer) {
 	}
 }
 
+func run(request *http.Request, duration time.Duration, concurrency int) <-chan *metrics.StandardTimer {
+	done := make(chan *metrics.StandardTimer)
+	go func() {
+		timer := metrics.NewTimer()
+		for i := 0; i < concurrency; i++ {
+			go worker(request, timer)
+		}
+		select {
+		case <-time.After(duration):
+			done <- timer
+		}
+	}()
+	return done
+}
+
 func summary(duration time.Duration, timer *metrics.StandardTimer) {
 	percentiles := timer.Percentiles([]float64{0.5, 0.75, 0.95, 0.99, 0.999})
 	fmt.Printf("Successful calls  \t\t %9d\n", timer.Count())
@@ -73,8 +88,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	timer := metrics.NewTimer()
-
 	d, err := time.ParseDuration(duration)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "can't parse duration: %s\n", err)
@@ -84,21 +97,16 @@ func main() {
 	fmt.Printf("Running %d workers for at least %s\n", concurrency, duration)
 	fmt.Println("Starting to load the server")
 
-	go func() {
-		request, err := http.NewRequest(method, url, strings.NewReader(body))
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "can't build request: %s\n", err)
-			os.Exit(1)
-		}
-		request.ContentLength = -1
-		request.Header.Add("Content-Type", contentType)
-		for i := 0; i < concurrency; i++ {
-			go worker(request, timer)
-		}
-	}()
+	request, err := http.NewRequest(method, url, strings.NewReader(body))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "can't build request: %s\n", err)
+		os.Exit(1)
+	}
+	request.ContentLength = -1
+	request.Header.Add("Content-Type", contentType)
 
 	select {
-	case <-time.After(d):
+	case timer := <-run(request, d, concurrency):
 		summary(d, timer)
 	}
 }

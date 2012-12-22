@@ -17,8 +17,8 @@ func TestWorker(t *testing.T) {
 		t.Fatal(err)
 	}
 	select {
-	case timer := <-run(request, time.Millisecond, 1):
-		if timer.Count() <= 0 {
+	case timer := <-runner(request, 1, time.Millisecond, 1):
+		if timer.Count() != 1 {
 			t.Fatal("no requests processed")
 		}
 	}

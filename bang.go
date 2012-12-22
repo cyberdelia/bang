@@ -69,7 +69,7 @@ func (r *worker) run(count int, duration time.Duration) {
 }
 
 func (r *worker) counter(count int) {
-	fmt.Printf("Running %d times per %d workers\n", r.concurrency, count)
+	fmt.Printf("Running %d times per %d workers\n", count, r.concurrency)
 	wg := sync.WaitGroup{}
 	for i := 0; i < r.concurrency; i++ {
 		for j := 0; j < count; j++ {

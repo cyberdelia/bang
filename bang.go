@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/rcrowley/go-metrics"
+	"net"
 	"net/http"
+	urlparse "net/url"
 	"os"
 	"strings"
 	"sync"
@@ -105,6 +107,30 @@ func runner(request *http.Request, concurrency int, duration time.Duration, coun
 	return runner.done
 }
 
+func resolve(url string) (string, error) {
+	parts, err := urlparse.Parse(url)
+	if err != nil {
+		return "", err
+	}
+	netloc := strings.Split(parts.Host, ":")
+	if len(netloc) == 1 {
+		if parts.Scheme == "https" {
+			netloc = append(netloc, "443")
+		} else {
+			netloc = append(netloc, "80")
+		}
+	}
+	resolved, err := net.LookupIP(netloc[0])
+	if err != nil {
+		return "", err
+	}
+	// Don't use ip for https
+	if parts.Scheme == "http" {
+		parts.Host = resolved[0].String() + ":" + netloc[1]
+	}
+	return parts.String(), nil
+}
+
 func summary(timer *metrics.StandardTimer) {
 	percentiles := timer.Percentiles([]float64{0.5, 0.75, 0.95, 0.99, 0.999})
 	fmt.Printf("Successful calls  \t\t %9d\n", timer.Count())
@@ -137,7 +163,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	request, err := http.NewRequest(method, url, strings.NewReader(body))
+	resolved, err := resolve(url)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "can't resolve url: %s\n", err)
+		os.Exit(1)
+	}
+
+	request, err := http.NewRequest(method, resolved, strings.NewReader(body))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "can't build request: %s\n", err)
 		os.Exit(1)

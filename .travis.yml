@@ -1,2 +1,2 @@
 language: go
-script: go test -v github.com/cyberdelia/circuitry
+script: go test -v github.com/cyberdelia/bang
